@@ -7,8 +7,8 @@ function App() {
   const [amount, setAmount] = useState("");
   const [lockTime, setLockTime] = useState("");
   const [lockDetails, setLockDetails] = useState([]);
-  const [balance, setBalance] = useState("");           // New state to hold balance
-  const [loading, setLoading] = useState(false);        // Track loading state
+  const [balance, setBalance] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const connectWallet = async () => {
     try {
@@ -25,7 +25,7 @@ function App() {
       alert("Please enter an amount to deposit.");
       return;
     }
-    
+
     setLoading(true);
     try {
       await contract.methods.deposit().send({
@@ -93,24 +93,23 @@ function App() {
         alert("Wallet not connected.");
         return;
       }
-  
+
       const result = await contract.methods.viewLockDetails().call({ from: account });
-  
-      // Debugging logs
+
+      // Debugging log
       console.log("Raw lock data from contract:", result);
-  
-      // Check structure
+
       if (!result || result.length !== 3) {
         alert("Unexpected result from smart contract.");
         return;
       }
-  
+
       const formatted = result[0].map((id, index) => ({
         id,
         amount: web3.utils.fromWei(result[1][index], "ether"),
         unlockTime: new Date(result[2][index] * 1000).toLocaleString(),
       }));
-  
+
       setLockDetails(formatted);
     } catch (error) {
       console.error("Error in viewLocks:", error);
@@ -120,7 +119,6 @@ function App() {
     }
   };
 
-  // ✅ NEW FUNCTION to get balance
   const getBalance = async () => {
     try {
       const result = await contract.methods.balances(account).call();
@@ -155,16 +153,15 @@ function App() {
       /><br />
 
       <button onClick={deposit} disabled={loading}>Deposit</button>
-      <button onClick={getBalance}>Deposited Amount</button> {/* ✅ NEW BUTTON */}
+      <button onClick={getBalance}>Deposited Amount</button>
       <button onClick={lockFunds} disabled={loading}>Lock Funds</button>
       <button onClick={withdraw} disabled={loading}>Withdraw</button>
       <button onClick={viewLocks} disabled={loading}>View Locks</button>
-      
 
       {loading && <p>Loading...</p>}
 
       {balance !== "" && (
-        <p><strong>Smart Contract Balance:</strong> {balance} ETH</p>  // ✅ Show balance
+        <p><strong>Smart Contract Balance:</strong> {balance} ETH</p>
       )}
 
       <h3>Lock Details</h3>
